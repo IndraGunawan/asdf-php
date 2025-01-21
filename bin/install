@@ -9,24 +9,27 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 source "${plugin_dir}/lib/utils.bash"
 
 install_version() {
-  local install_type="$1"
-  local version="$(get_full_version "$2")"
-  local install_path="$3"
+	local install_type version install_path
+	install_type="$1"
+	version="$(get_full_version "$2")"
+	install_path="$3"
 
-  if [ "$install_type" != "version" ]; then
-    fail "asdf-$TOOL_NAME supports release installs only"
-  fi
+	if [ "$install_type" != "version" ]; then
+		fail "asdf-$TOOL_NAME supports release installs only"
+	fi
 
-  (
-    mkdir -p "$install_path"
+	(
+		mkdir -p "$install_path"
 
-    cd $ASDF_DOWNLOAD_PATH
+		cd "$ASDF_DOWNLOAD_PATH"
 
-		local make_flags=(-j$ASDF_CONCURRENCY)
+		local make_flags configure_options
+
+		make_flags=(-j$ASDF_CONCURRENCY)
 
 		BREW_OPT="$(brew --prefix)/opt"
 
-		local configure_options=(
+		configure_options=(
 			--prefix="$install_path"
 			--sysconfdir="$install_path"
 			--with-config-file-path="$install_path"
@@ -83,35 +86,36 @@ install_version() {
 			export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${pkg_cfg_path}"
 		fi
 
-    # Build PHP
-    echo "* Running buildconfig..."
-    ./buildconf --force || exit 1
-    echo "* Running ./configure ${configure_options[@]}"
-    ./configure "${configure_options[@]}" || exit 1
-    echo "* Running make \"${make_flags[@]}\""
-    make "${make_flags[@]}" || exit 1
-    echo "* Running make install..."
-    make "${make_flags[@]}" install || exit 1
+		# Build PHP
+		echo "* Running buildconfig..."
+		./buildconf --force || exit 1
+		echo "* Running ./configure ${configure_options[@]}"
+		./configure "${configure_options[@]}" || exit 1
+		echo "* Running make \"${make_flags[@]}\""
+		make "${make_flags[@]}" || exit 1
+		echo "* Running make install..."
+		make "${make_flags[@]}" install || exit 1
 
-    local tool_cmd
-    tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-    test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
+		local tool_cmd
+		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
+		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
 
-    echo "$TOOL_NAME $version installation was successful!"
-  ) || (
-    rm -rf "$install_path"
-    fail "An error occurred while installing $TOOL_NAME $version."
-  )
+		echo "$TOOL_NAME $version installation was successful!"
+	) || (
+		rm -rf "$install_path"
+		fail "An error occurred while installing $TOOL_NAME $version."
+	)
 }
 
 install_composer() {
-  local bin_path=$1/bin
-  local expected_signature="$(curl -sL https://composer.github.io/installer.sig)"
+	local bin_path expected_signature
+	bin_path=$1/bin
+	expected_signature="$(curl -sL https://composer.github.io/installer.sig)"
 
-  $bin_path/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  $bin_path/php -r "if (hash_file('sha384', 'composer-setup.php') === '${expected_signature}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  $bin_path/php composer-setup.php --install-dir=$bin_path --filename=composer
-  $bin_path/php -r "unlink('composer-setup.php');"
+	$bin_path/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+	$bin_path/php -r "if (hash_file('sha384', 'composer-setup.php') === '${expected_signature}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+	$bin_path/php composer-setup.php --install-dir=$bin_path --filename=composer
+	$bin_path/php -r "unlink('composer-setup.php');"
 }
 
 install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"

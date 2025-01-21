@@ -16,7 +16,11 @@ jobs:
           - macos-latest
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install depencies
+        run: |
+          brew install autoconf re2c bison pkg-config libiconv gd gmp libsodium libpq readline gettext bzip2 curl libffi libxml2 libxslt zlib icu4c oniguruma libzip
+
       - name: asdf_plugin_test
-        uses: asdf-vm/actions/plugin-test@v2
+        uses: asdf-vm/actions/plugin-test@v3
         with:
           command: php --version
