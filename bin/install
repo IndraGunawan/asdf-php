@@ -8,4 +8,115 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
+install_version() {
+	local install_type version install_path
+	install_type="$1"
+	version="$(get_full_version "$2")"
+	install_path="$3"
+
+	if [ "$install_type" != "version" ]; then
+		fail "asdf-$TOOL_NAME supports release installs only"
+	fi
+
+	(
+		mkdir -p "$install_path"
+
+		cd "$ASDF_DOWNLOAD_PATH"
+
+		local make_flags configure_options
+
+		make_flags=(-j$ASDF_CONCURRENCY)
+
+		BREW_OPT="$(brew --prefix)/opt"
+
+		configure_options=(
+			--prefix="$install_path"
+			--sysconfdir="$install_path"
+			--with-config-file-path="$install_path"
+			--with-config-file-scan-dir="$install_path/conf.d"
+
+			--enable-bcmath
+			--enable-calendar
+			--enable-dba
+			--enable-exif
+			--enable-fpm
+			--enable-gd
+			--enable-intl
+			--enable-mbregex
+			--enable-mbstring
+			--enable-mysqlnd
+			--enable-pcntl
+			--enable-shmop
+			--enable-soap
+			--enable-sockets
+			--enable-sysvmsg
+			--enable-sysvsem
+			--enable-sysvshm
+			--with-curl
+			--with-external-gd
+			--with-fpm-group="www-data"
+			--with-fpm-user="www-data"
+			--with-mhash
+			--with-mysqli=mysqlnd
+			--with-pdo-mysql=mysqlnd
+			--with-zip
+			--with-zlib
+			--without-snmp
+			--with-sodium
+
+			--with-openssl
+			--with-pgsql="$BREW_OPT/libpq"
+			--with-pdo-pgsql="$BREW_OPT/libpq"
+			--with-readline="$BREW_OPT/readline"
+			--with-gettext="$BREW_OPT/gettext"
+			--with-bz2="$BREW_OPT/bzip2"
+			--with-iconv="$BREW_OPT/libiconv"
+			--with-gmp="$BREW_OPT/gmp"
+		)
+
+		export PATH="$BREW_OPT/bison/bin:$BREW_OPT/libiconv/bin:$PATH"
+		pkg_cfg_path=""
+		pkg_cfg_path="${pkg_cfg_path}:${BREW_OPT}/openssl@3/lib/pkgconfig"
+
+		pkg_cfg_path="${pkg_cfg_path}:${BREW_OPT}/icu4c/lib/pkgconfig"
+
+		if [ -z "${PKG_CONFIG_PATH-}" ]; then
+			export PKG_CONFIG_PATH="${pkg_cfg_path}"
+		else
+			export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${pkg_cfg_path}"
+		fi
+
+		# Build PHP
+		echo "* Running buildconfig..."
+		./buildconf --force || exit 1
+		echo "* Running ./configure ${configure_options[@]}"
+		./configure "${configure_options[@]}" || exit 1
+		echo "* Running make \"${make_flags[@]}\""
+		make "${make_flags[@]}" || exit 1
+		echo "* Running make install..."
+		make "${make_flags[@]}" install || exit 1
+
+		local tool_cmd
+		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
+		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
+
+		echo "$TOOL_NAME $version installation was successful!"
+	) || (
+		rm -rf "$install_path"
+		fail "An error occurred while installing $TOOL_NAME $version."
+	)
+}
+
+install_composer() {
+	local bin_path expected_signature
+	bin_path=$1/bin
+	expected_signature="$(curl -sL https://composer.github.io/installer.sig)"
+
+	$bin_path/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+	$bin_path/php -r "if (hash_file('sha384', 'composer-setup.php') === '${expected_signature}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+	$bin_path/php composer-setup.php --install-dir=$bin_path --filename=composer
+	$bin_path/php -r "unlink('composer-setup.php');"
+}
+
 install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+install_composer "$ASDF_INSTALL_PATH"

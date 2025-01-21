@@ -15,18 +15,17 @@
 
 # Dependencies
 
-**TODO: adapt this section**
+## MacOS
 
-- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+```shell
+brew install autoconf re2c bison pkg-config libiconv gd gmp libsodium libpq readline gettext bzip2 curl libffi libxml2 libxslt zlib icu4c oniguruma libzip
+```
 
 # Install
 
 Plugin:
 
 ```shell
-asdf plugin add php
-# or
 asdf plugin add php https://github.com/IndraGunawan/asdf-php.git
 ```
 
