@@ -55,7 +55,6 @@ download_release() {
 	filename="$2"
 
 	if [ -f "$filename" ]; then
-		exit 0
 		echo "* Removing existing $filename"
 		rm "$filename"
 	fi

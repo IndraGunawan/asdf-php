@@ -74,7 +74,7 @@ install_version() {
 			--with-gmp="$BREW_OPT/gmp"
 		)
 
-		export PATH="$BREW_OPT/bison/bin:$PATH"
+		export PATH="$BREW_OPT/bison/bin:$BREW_OPT/libiconv/bin:$PATH"
 		pkg_cfg_path=""
 		pkg_cfg_path="${pkg_cfg_path}:${BREW_OPT}/openssl@3/lib/pkgconfig"
 
