@@ -63,6 +63,7 @@ install_version() {
 			--without-snmp
 			--with-sodium
 			--without-sqlite3
+			--without-pdo-sqlite
 
 			--with-openssl
 			--with-zlib="$BREW_OPT/zlib"
