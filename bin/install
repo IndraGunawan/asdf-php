@@ -65,6 +65,7 @@ install_version() {
 			--with-openssl
 
 			--with-sqlite3="$BREW_OPT/sqlite"
+			--with-pdo-sqlite="$BREW_OPT/sqlite"
 			--with-zlib="$BREW_OPT/zlib"
 			--with-pgsql="$BREW_OPT/libpq"
 			--with-pdo-pgsql="$BREW_OPT/libpq"
