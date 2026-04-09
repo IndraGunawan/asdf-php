@@ -60,11 +60,11 @@ install_version() {
 			--with-mysqli=mysqlnd
 			--with-pdo-mysql=mysqlnd
 			--with-zip
-			--with-zlib
 			--without-snmp
 			--with-sodium
 
 			--with-openssl
+			--with-zlib="$BREW_OPT/zlib"
 			--with-pgsql="$BREW_OPT/libpq"
 			--with-pdo-pgsql="$BREW_OPT/libpq"
 			--with-readline="$BREW_OPT/readline"

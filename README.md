@@ -23,7 +23,9 @@ brew install autoconf re2c bison pkg-config libiconv gd gmp libsodium libpq read
 
 # Install
 
-Plugin:
+## Asdf
+
+Install plugin:
 
 ```shell
 asdf plugin add php https://github.com/IndraGunawan/asdf-php.git
@@ -45,8 +47,29 @@ asdf global php latest
 php --version
 ```
 
-Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
-install & manage versions.
+## Mise
+
+Install plugin:
+
+```shell
+mise plugin add https://github.com/IndraGunawan/asdf-php.git
+```
+
+php:
+
+```shell
+# Show all installable versions
+mise list php
+
+# Install specific version
+mise install php@latest
+
+# Set a version globally (on your .mise.toml file)
+mise use -g php@latest
+
+# Now php commands are available
+php --version
+```
 
 # Contributing
 
