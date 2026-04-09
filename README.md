@@ -18,7 +18,7 @@
 ## MacOS
 
 ```shell
-brew install autoconf re2c bison pkg-config libiconv gd gmp libsodium libpq readline gettext bzip2 curl libffi libxml2 libxslt zlib icu4c oniguruma libzip
+brew install autoconf re2c bison pkg-config libiconv gd gmp libsodium libpq readline gettext bzip2 curl libffi libxml2 libxslt zlib icu4c oniguruma libzip sqlite
 ```
 
 # Install
