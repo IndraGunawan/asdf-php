@@ -39,6 +39,7 @@ asdf list-all php
 
 # Install specific version
 asdf install php latest
+asdf install php 8.4.19
 
 # Set a version globally (on your ~/.tool-versions file)
 asdf global php latest
@@ -62,7 +63,8 @@ php:
 mise list php
 
 # Install specific version
-mise install php@latest
+mise use php@latest
+mise use php@8.4.19
 
 # Set a version globally (on your .mise.toml file)
 mise use -g php@latest
