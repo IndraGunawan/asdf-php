@@ -62,8 +62,9 @@ install_version() {
 			--with-zip
 			--without-snmp
 			--with-sodium
-
 			--with-openssl
+
+			--with-sqlite3="$BREW_OPT/sqlite"
 			--with-zlib="$BREW_OPT/zlib"
 			--with-pgsql="$BREW_OPT/libpq"
 			--with-pdo-pgsql="$BREW_OPT/libpq"
